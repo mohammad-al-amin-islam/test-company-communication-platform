@@ -17,6 +17,4 @@ test("dashboard check", async ({ page }) => {
 
   await page.getByRole("button", { name: "Sign Out" }).click();
   await expect(page.getByRole('link', { name: 'Sign In' })).toHaveText("Sign In");
-
-
 });

@@ -1,7 +1,7 @@
 import { expect, test } from "@playwright/test";
 import { LoginClass } from "../../classes/login";
 
-test("remove user test", async ({ page }) => {
+test.beforeEach(async ({ page }) => {
   const Login = new LoginClass(page);
   await Login.gotoUrl();
   await page.getByRole("link", { name: "Sign In" }).click();
@@ -10,16 +10,25 @@ test("remove user test", async ({ page }) => {
   await expect(page.getByRole("button", { name: "Sign Out" })).toHaveText(
     "Sign Out"
   );
+});
 
-  await page.pause();
+test.afterAll(async({page})=>{
+  await page.close();
+})
+
+
+//admin can not be deleted testing
+test("disable button testing", async ({ page }) => {
+  // await page.pause();
   await page.getByRole("link", { name: "Dashboard" }).click();
   await page.getByRole("link", { name: "Remove user" }).click();
-  page.once("dialog", (dialog) => {
-    console.log(`Dialog message: ${dialog.message()}`);
-    dialog.dismiss().catch(() => {});
-  });
-  await page
-    .getByRole('row', { name: 'adding From Test member p1@test.com Remove' })
-    .getByRole("button", { name: "Remove" })
-    .click();
+  await expect(page.locator('//*[@id="__next"]/div/main/div/main/div/table/tbody/tr[1]/td[4]/button')).toBeDisabled();
+});
+
+
+//other user delete testing
+test("enable button user test", async ({ page }) => {
+  await page.getByRole("link", { name: "Dashboard" }).click();
+  await page.getByRole("link", { name: "Remove user" }).click();
+  await expect(page.locator('//*[@id="__next"]/div/main/div/main/div/table/tbody/tr[13]/td[4]/button')).toBeEnabled();
 });
